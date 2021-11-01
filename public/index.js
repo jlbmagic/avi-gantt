@@ -18,13 +18,10 @@ window.loadData = (obj) => {
   const data = JSON.parse(obj);
   // alert("Load");
   const json = data.filter((i) => {
-    console.log(i.fieldData.Indent);
     return i.fieldData.Indent > 1;
   });
-  console.log(json);
   // return;
   const createArray = (i) => {
-    console.log(i);
     const a = [
       i.fieldData["PK_TASK_ID"],
       i.fieldData["Task Name"],
@@ -38,6 +35,7 @@ window.loadData = (obj) => {
     return a;
   };
   const arr = json.map(createArray);
+  console.log(arr);
   const len = arr.length;
   google.charts.load("current", { packages: ["gantt"] });
   google.charts.setOnLoadCallback(drawChart);
@@ -115,7 +113,7 @@ window.loadData = (obj) => {
         trackHeight: 20,
         barHeight: 16,
         arrow: { width: 1, color: "purple" },
-        criticalPathEnabled: false,
+        criticalPathEnabled: true,
         criticalPathStyle: {
           stroke: "#e64a19",
           strokeWidth: 2,
