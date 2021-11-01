@@ -25,7 +25,7 @@ window.loadData = (obj) => {
     const a = [
       i.fieldData["PK_TASK_ID"],
       i.fieldData["Task Name"],
-      i.fieldData["Group"].toString(),
+      groups[i.fieldData["Group"]],
       new Date(i.fieldData["Start Date"]),
       new Date(i.fieldData["End Date"]),
       null,
@@ -109,6 +109,7 @@ window.loadData = (obj) => {
       height: len * 22 + 40,
 
       gantt: {
+        sortTasks: false,
         labelMaxWidth: 600,
         trackHeight: 20,
         barHeight: 16,
