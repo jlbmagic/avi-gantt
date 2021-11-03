@@ -1,7 +1,7 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./style.css";
 import "regenerator-runtime/runtime.js";
-// import data from "data";
+import testData from "data";
 
 const groups = [
   "Project Name",
@@ -14,28 +14,43 @@ const groups = [
 function daysToMilliseconds(days) {
   return days * 24 * 60 * 60 * 1000;
 }
+const dependField =
+  "T01L PRJ~TSK~Task Dpendency|Dependencies~SortOrder|sj::PK_TASK_ID";
+var day = 60 * 60 * 24 * 1000;
 window.loadData = (obj) => {
-  const data = JSON.parse(obj);
-  // alert("Load");
-  const json = data.filter((i) => {
-    return i.fieldData.Indent > 1;
+  // const data = JSON.parse(obj);
+  const data = testData;
+  console.log("DATA", testData);
+  const taskIds = data.map((i) => {
+    return i.fieldData["PK_TASK_ID"];
   });
   // return;
   const createArray = (i) => {
+    const dateStart = new Date(i.fieldData["Start Date"]);
+    const dateEnd = new Date(i.fieldData["End Date"]);
+    const endDate =
+      dateStart.getTime() === dateEnd.getTime()
+        ? new Date(dateEnd.getTime() + day)
+        : dateEnd;
+
+    const inclDep = taskIds.includes(i.fieldData[dependField])
+      ? i.fieldData[dependField]
+      : null;
+    console.log(inclDep);
+    console.log(i.fieldData["Task Name"], dateStart, dateEnd, endDate);
     const a = [
       i.fieldData["PK_TASK_ID"],
       i.fieldData["Task Name"],
       groups[i.fieldData["Group"]],
       new Date(i.fieldData["Start Date"]),
-      new Date(i.fieldData["End Date"]),
+      endDate,
       null,
       i.fieldData["Percent Complete"] * 100,
-      null,
+      inclDep,
     ];
     return a;
   };
   const arr = json.map(createArray);
-  console.log(arr);
   const len = arr.length;
   google.charts.load("current", { packages: ["gantt"] });
   google.charts.setOnLoadCallback(drawChart);
@@ -107,13 +122,13 @@ window.loadData = (obj) => {
 
     var options = {
       height: len * 22 + 40,
-
+      // height: 1000,
       gantt: {
         sortTasks: false,
         labelMaxWidth: 600,
         trackHeight: 20,
         barHeight: 16,
-        arrow: { width: 1, color: "purple" },
+        arrow: { width: 1, color: "gray" },
         criticalPathEnabled: true,
         criticalPathStyle: {
           stroke: "#e64a19",
