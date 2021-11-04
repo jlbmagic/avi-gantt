@@ -1,7 +1,7 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./style.css";
 import "regenerator-runtime/runtime.js";
-import testData from "data";
+// import data from "data";
 
 const groups = [
   "Project Name",
@@ -17,15 +17,20 @@ function daysToMilliseconds(days) {
 const dependField =
   "T01L PRJ~TSK~Task Dpendency|Dependencies~SortOrder|sj::PK_TASK_ID";
 var day = 60 * 60 * 24 * 1000;
-window.loadData = (obj) => {
-  // const data = JSON.parse(obj);
-  const data = testData;
-  console.log("DATA", testData);
+window.loadData = (obj, trackHeight) => {
+  const data = JSON.parse(obj);
+  // alert("Load");
+  const json = data;
   const taskIds = data.map((i) => {
     return i.fieldData["PK_TASK_ID"];
   });
   // return;
   const createArray = (i) => {
+    const milestone = i.fieldData["Milestone Display"];
+    const taskName =
+      milestone === "Yes"
+        ? "🌟 " + i.fieldData["Task Name"] + " 🌟"
+        : i.fieldData["Task Name"];
     const dateStart = new Date(i.fieldData["Start Date"]);
     const dateEnd = new Date(i.fieldData["End Date"]);
     const endDate =
@@ -36,11 +41,9 @@ window.loadData = (obj) => {
     const inclDep = taskIds.includes(i.fieldData[dependField])
       ? i.fieldData[dependField]
       : null;
-    console.log(inclDep);
-    console.log(i.fieldData["Task Name"], dateStart, dateEnd, endDate);
     const a = [
       i.fieldData["PK_TASK_ID"],
-      i.fieldData["Task Name"],
+      taskName,
       groups[i.fieldData["Group"]],
       new Date(i.fieldData["Start Date"]),
       endDate,
@@ -55,58 +58,6 @@ window.loadData = (obj) => {
   google.charts.load("current", { packages: ["gantt"] });
   google.charts.setOnLoadCallback(drawChart);
 
-  const array = [
-    [
-      "1234",
-      "Find sources",
-      //   null,
-      new Date(2015, 0, 1),
-      new Date(2015, 0, 5),
-      null,
-      100,
-      null,
-    ],
-    [
-      "Write",
-      "Write paper",
-      //   "write",
-      null,
-      new Date(2015, 0, 9),
-      daysToMilliseconds(3),
-      25,
-      "1234,Outline",
-    ],
-    [
-      "Cite",
-      "Create bibliography",
-      //   "write",
-      null,
-      new Date(2015, 0, 7),
-      daysToMilliseconds(1),
-      20,
-      "1234",
-    ],
-    [
-      "Complete",
-      "Hand in paper",
-      //   "complete",
-      null,
-      new Date(2015, 0, 10),
-      daysToMilliseconds(1),
-      0,
-      "Cite,Write",
-    ],
-    [
-      "Outline",
-      "Outline paper",
-      //   "write",
-      null,
-      new Date(2015, 0, 6),
-      daysToMilliseconds(1),
-      100,
-      "1234",
-    ],
-  ];
   function drawChart() {
     var data = new google.visualization.DataTable();
     data.addColumn("string", "Task ID");
@@ -119,15 +70,17 @@ window.loadData = (obj) => {
     data.addColumn("string", "Dependencies");
 
     data.addRows(arr);
-
     var options = {
-      height: len * 22 + 40,
+      height: len * trackHeight + 2 + 40,
       // height: 1000,
       gantt: {
+        labelStyle: {
+          fontSize: 16,
+        },
         sortTasks: false,
         labelMaxWidth: 600,
-        trackHeight: 20,
-        barHeight: 16,
+        trackHeight: trackHeight,
+        barHeight: trackHeight - 6,
         arrow: { width: 1, color: "gray" },
         criticalPathEnabled: true,
         criticalPathStyle: {
@@ -142,4 +95,11 @@ window.loadData = (obj) => {
 
     chart.draw(data, options);
   }
+
+  const addLabelText = (chartId, allTasks) => {
+    const toContainer = $("#" + chartId + " > div > div");
+    $("#" + chartId + " g:eq(5) text").forEach(function ($index) {
+      console.log($(this).innerHTML);
+    });
+  };
 };
