@@ -1,7 +1,7 @@
 const open = require("open");
 const path = require("path");
-const server = "fmp.avispl.com";
-const file = "Service Transition Dashboard";
+const server = "$";
+const file = "";
 const uploadScript = "UploadToHTML";
 
 const fileUrl = `fmp://${server}/${file}?script=${uploadScript}&param=`;
