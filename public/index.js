@@ -1,8 +1,7 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./style.css";
 import "regenerator-runtime/runtime.js";
-// import Canvg from "canvg";
-// import data from "data";
+import html2canvas from "html2canvas";
 
 const groups = [
   "Project Name",
@@ -179,4 +178,12 @@ window.loadData = (obj, trackHeight) => {
       console.log("OUTPUT", output);
     });
   };
+};
+window.saveImage = () => {
+  html2canvas(document.querySelector("#chart_div")).then((canvas) => {
+    const img = canvas.toDataURL("image/png");
+    // console.log(img);
+
+    FileMaker.PerformScriptWithOption("Get Image", JSON.stringify(img), 5);
+  });
 };
